@@ -1,0 +1,95 @@
+# Benjamin Kelm, 02.04.2024
+canard-Doen-Air
+0.0                      Mach
+0.0    0.0    0.0        iYsym  iZsym  Zsym
+0.09   0.25   0.76       Sref   Cref   Bref
+0.00   0.0    0.0        Xref   Yref   Zref
+0.017                    CDo
+#=============================================
+
+
+SURFACE
+CANARD
+10  1.0   20 -2.0
+YDUPLICATE
+     0.0
+ANGLE
+     0.0
+SCALE
+1.0  1.0  1.0
+TRANSLATE
+-0.260  0.0  0.0
+#--CENTER SECTION--------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+    0.0          0.0         0.0        0.084         0.0     7   0.25
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+
+#--Elevator-Start-----------------------
+SECTION
+    0.003        0.012      0.0        0.080         0.0    11  -2.70
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+#Cname   Cgain  Xhinge  HingeVec       SgnDup
+CONTROL
+elevator  1.0   0.3     0.0 1.0 0.0    1.0
+
+#--Elevator-End-------------------------
+SECTION
+    0.025        0.157      0.0        0.055        0.0    11  -2.25
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+#Cname   Cgain  Xhinge  HingeVec       SgnDup
+CONTROL
+elevator  1.0   0.4     0.0 1.0 0.0    1.0
+
+#--Canard-Tip-------------------------
+SECTION
+    0.029        0.175      0.0        0.051        0.0    11  -2.25
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+
+
+
+SURFACE
+WING
+10  1.0   45 -2.0
+YDUPLICATE
+     0.0
+ANGLE
+     0.0
+SCALE
+1.0  1.0  1.0
+TRANSLATE
+0.0  0.0  0.0
+#--CENTER SECTION--------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+    0.0          0.0         0.0        0.190         0.0     7   0.25
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+
+#--Aileron-Start -------------------------
+SECTION
+    0.031        0.150      0.0        0.135         0.0    11  -2.70
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+#Cname   Cgain  Xhinge  HingeVec       SgnDup
+CONTROL
+aileron  1.0   0.23     0.0 1.0 0.0    -1.0
+
+#--WINGTIP-------------------------
+SECTION
+    0.112        0.365      0.0        0.056        0.0    11  -2.25
+AFIL
+/Users/benjaminkelm/Desktop/20240401_cDA/cDA_AVL_model/clarky-il.dat
+#Cname   Cgain  Xhinge  HingeVec       SgnDup
+CONTROL
+aileron  1.0   0.4     0.0 1.0 0.0    -1.0
+
+#----Winglet END-----------------------
+SECTION
+    0.192        0.415    -0.152        0.035         0.0    1    0
+NACA 
+0012
