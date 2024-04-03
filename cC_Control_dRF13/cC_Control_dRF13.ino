@@ -24,8 +24,6 @@ Everyone that sends me pictures and videos of your flying creations! -Nick
 
 */
 
-
-
 //========================================================================================================================//
 //                                                 USER-SPECIFIED DEFINES                                                 //                                                                 
 //========================================================================================================================//
@@ -179,8 +177,8 @@ float GyroErrorZ = -0.38;
 
 //Controller parameters (take note of defaults before modifying!): 
 float i_limit = 25.0;     //Integrator saturation level, mostly for safety (default 25.0)
-float maxRoll = 30.0;     //Max roll angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode 
-float maxPitch = 30.0;    //Max pitch angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode
+float maxRoll = 40.0;     //Max roll angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode 
+float maxPitch = 40.0;    //Max pitch angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode
 float maxYaw = 160.0;     //Max yaw rate in deg/sec
 
 float Kp_roll_angle = 0.2;    //Roll P-gain - angle mode 
@@ -491,8 +489,8 @@ void controlMixer() {
   if (channel_6_pwm < 1700 & channel_6_pwm > 1300){
     
     m1_command_scaled = thro_des- pitch_PID; //Front
-    m2_command_scaled = thro_des + pitch_PID + roll_PID - 0.1*yaw_PID; //Left
-    m3_command_scaled = thro_des + pitch_PID - roll_PID + 0.1*yaw_PID; //Right
+    m2_command_scaled = thro_des + 0.5* pitch_PID + roll_PID; //Left
+    m3_command_scaled = thro_des + 0.5* pitch_PID - roll_PID; //Right
 
     s1_command_scaled = 0.60; // Front tilt
     s2_command_scaled = 0.40; // left tilt
@@ -506,8 +504,8 @@ void controlMixer() {
   if (channel_6_pwm < 1300){
 
     m1_command_scaled = thro_des; //Front
-    m2_command_scaled = thro_des - 0.2*yaw_PID; //Left
-    m3_command_scaled = thro_des + 0.2*yaw_PID; //Right
+    m2_command_scaled = thro_des; //Left
+    m3_command_scaled = thro_des; //Right
 
     s1_command_scaled = 0.05; // Front tilt
     s2_command_scaled = 0.95; // left tilt

@@ -18,6 +18,11 @@ Based upon the [dRehmFlight](https://github.com/nickrehm/dRehmFlight) controller
 - Carbon Tube (here 16mm diameter), Carbon rods for reinforcement & flap hinges
 - Tilting Mechanism (here 3D printed)
 
+## AVL Model - for flight mechanics analysis
+- cC.avl - main AVL file with dimension (! Absolute file paths used here, please change accordingly !)
+- cC.mass - Mass file for CG settings
+- clarky-il.dat - Aerodynamic Profile file
+
 ## CAD Project
 [canardy Cricket Onshape Project](https://cad.onshape.com/documents/c49ee44cffd383bab41d815f/w/c213a2c4295a4f779c173ce5/e/e1d0d3d6b650295896167aed?renderMode=0&uiState=660da457faabf8135c725aef)
 
