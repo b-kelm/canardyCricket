@@ -493,8 +493,8 @@ void controlMixer() {
     m3_command_scaled = thro_des + 0.5* pitch_PID - roll_PID; //Right
 
     s1_command_scaled = 0.60; // Front tilt
-    s2_command_scaled = 0.40; // left tilt
-    s3_command_scaled = 0.60; // right tilt
+    s2_command_scaled = 0.40 - 0.6*yaw_PID; // left tilt
+    s3_command_scaled = 0.65 - 0.6*yaw_PID; // right tilt
     s4_command_scaled = 0.5 + 3*pitch_PID; // Canard front
     s5_command_scaled = 0.5 - 3*roll_PID; // Aileron left
     s6_command_scaled = 0.5 - 3*roll_PID; // Aileron right 
@@ -504,15 +504,15 @@ void controlMixer() {
   if (channel_6_pwm < 1300){
 
     m1_command_scaled = thro_des; //Front
-    m2_command_scaled = thro_des; //Left
-    m3_command_scaled = thro_des; //Right
+    m2_command_scaled = thro_des - 0.1*yaw_PID; //Left
+    m3_command_scaled = thro_des + 0.1*yaw_PID; //Right
 
     s1_command_scaled = 0.05; // Front tilt
     s2_command_scaled = 0.95; // left tilt
     s3_command_scaled = 0.05; // right tilt
-    s4_command_scaled = 0.5 + 2*pitch_PID; // Canard front
-    s5_command_scaled = 0.5 - 2*roll_PID; // Aileron left
-    s6_command_scaled = 0.5 - 2*roll_PID; // Aileron right    
+    s4_command_scaled = 0.5 + pitch_PID; // Canard front
+    s5_command_scaled = 0.5 - roll_PID; // Aileron left
+    s6_command_scaled = 0.5 - roll_PID; // Aileron right    
   }
 
   //0.5 is centered servo, 0.0 is zero throttle if connecting to ESC for conventional PWM, 1.0 is max throttle
