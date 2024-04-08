@@ -194,8 +194,8 @@ float Kp_roll_rate = 0.15;    //Roll P-gain - rate mode
 float Ki_roll_rate = 0.2;     //Roll I-gain - rate mode
 float Kd_roll_rate = 0.0002;  //Roll D-gain - rate mode (be careful when increasing too high, motors will begin to overheat!)
 float Kp_pitch_rate = 0.15;   //Pitch P-gain - rate mode
-float Ki_pitch_rate = 0.2;    //Pitch I-gain - rate mode
-float Kd_pitch_rate = 0.0002; //Pitch D-gain - rate mode (be careful when increasing too high, motors will begin to overheat!)
+float Ki_pitch_rate = 0.15;    //Pitch I-gain - rate mode
+float Kd_pitch_rate = 0.0003; //Pitch D-gain - rate mode (be careful when increasing too high, motors will begin to overheat!)
 
 float Kp_yaw = 0.3;           //Yaw P-gain
 float Ki_yaw = 0.05;          //Yaw I-gain
@@ -401,7 +401,7 @@ void loop() {
   //printAccelData();     //Prints filtered accelerometer data direct from IMU (expected: ~ -2 to 2; x,y 0 when level, z 1 when level)
   //printMagData();       //Prints filtered magnetometer data direct from IMU (expected: ~ -300 to 300)
   //printRollPitchYaw();  //Prints roll, pitch, and yaw angles in degrees from Madgwick filter (expected: degrees, 0 when level)
-  printPIDoutput();     //Prints computed stabilized PID variables from controller and desired setpoint (expected: ~ -1 to 1)
+  //printPIDoutput();     //Prints computed stabilized PID variables from controller and desired setpoint (expected: ~ -1 to 1)
   //printMotorCommands(); //Prints the values being written to the motors (expected: 120 to 250)
   //printServoCommands(); //Prints the values being written to the servos (expected: 0 to 180)
   //printLoopRate();      //Prints the time between loops in microseconds (expected: microseconds between loop iterations)
@@ -417,7 +417,7 @@ void loop() {
   getDesState(); //Convert raw commands to normalized values based on saturated control limits
   
   //PID Controller - SELECT ONE:
-  controlANGLE(); //Stabilize on angle setpoint
+  //controlANGLE(); //Stabilize on angle setpoint
   //controlANGLE2(); //Stabilize on angle setpoint using cascaded method. Rate controller must be tuned well first!
   //controlRATE(); //Stabilize on rate setpoint
 
@@ -472,9 +472,15 @@ void controlMixer() {
    */
    // MODE 1: HOVER
   if (channel_6_pwm > 1700){
+    i_limit = 25.0;     //Integrator saturation level, mostly for safety (default 25.0)
+    maxRoll = 40.0;     //Max roll angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode 
+    maxPitch = 40.0;    //Max pitch angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode
+    maxYaw = 160.0;     //Max yaw rate in deg/sec
+    
+    controlANGLE(); //Stabilize on angle setpoint
     m1_command_scaled = thro_des- pitch_PID; //Front
-    m2_command_scaled = thro_des + pitch_PID + roll_PID; //Left
-    m3_command_scaled = thro_des + pitch_PID - roll_PID; //Right
+    m2_command_scaled = 0.9*thro_des + pitch_PID + roll_PID; //Left
+    m3_command_scaled = 0.9*thro_des + pitch_PID - roll_PID; //Right
 
     s1_command_scaled = 0.85; // Front tilt
     s2_command_scaled = 0.15 - yaw_PID; // left tilt
@@ -487,32 +493,44 @@ void controlMixer() {
 
   // MODE 2: TRANSITION
   if (channel_6_pwm < 1700 & channel_6_pwm > 1300){
+    i_limit = 25.0;     //Integrator saturation level, mostly for safety (default 25.0)
+    maxRoll = 40.0;     //Max roll angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode 
+    maxPitch = 25.0;    //Max pitch angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode
+    maxYaw = 160.0;     //Max yaw rate in deg/sec
     
-    m1_command_scaled = thro_des- pitch_PID; //Front
-    m2_command_scaled = thro_des + 0.5* pitch_PID + roll_PID; //Left
-    m3_command_scaled = thro_des + 0.5* pitch_PID - roll_PID; //Right
+    controlANGLE(); //Stabilize on angle setpoint
+    m1_command_scaled = thro_des - pitch_PID; //Front
+    m2_command_scaled = 0.9*thro_des + 0.5* pitch_PID + roll_PID; //Left
+    m3_command_scaled = 0.9*thro_des + 0.5* pitch_PID - roll_PID; //Right
 
     s1_command_scaled = 0.60; // Front tilt
     s2_command_scaled = 0.40 - 0.6*yaw_PID; // left tilt
     s3_command_scaled = 0.65 - 0.6*yaw_PID; // right tilt
-    s4_command_scaled = 0.5 + 3*pitch_PID; // Canard front
-    s5_command_scaled = 0.5 - 3*roll_PID; // Aileron left
-    s6_command_scaled = 0.5 - 3*roll_PID; // Aileron right 
+    s4_command_scaled = 0.5 + 2*pitch_PID; // Canard front
+    s5_command_scaled = 0.5 - 2*roll_PID; // Aileron left
+    s6_command_scaled = 0.5 - 2*roll_PID; // Aileron right 
     
   }
   // MODE 3: LEVEL-FLIGHT
   if (channel_6_pwm < 1300){
 
+    i_limit = 25.0;     //Integrator saturation level, mostly for safety (default 25.0)
+    maxRoll = 120.0;     //Max roll angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode 
+    maxPitch = 120.0;    //Max pitch angle in degrees for angle mode (maximum ~70 degrees), deg/sec for rate mode
+    maxYaw = 200.0;     //Max yaw rate in deg/sec
+    
+    controlRATE(); //Stabilize on angle setpoint
     m1_command_scaled = thro_des; //Front
-    m2_command_scaled = thro_des - 0.1*yaw_PID; //Left
-    m3_command_scaled = thro_des + 0.1*yaw_PID; //Right
+    m2_command_scaled = 0.9*thro_des - 0.1*yaw_PID - 0.1*roll_PID; //Left
+    m3_command_scaled = 0.9*thro_des + 0.1*yaw_PID + 0.1*roll_PID; //Right
 
     s1_command_scaled = 0.05; // Front tilt
     s2_command_scaled = 0.95; // left tilt
     s3_command_scaled = 0.05; // right tilt
-    s4_command_scaled = 0.5 + pitch_PID; // Canard front
-    s5_command_scaled = 0.5 - roll_PID; // Aileron left
-    s6_command_scaled = 0.5 - roll_PID; // Aileron right    
+    s4_command_scaled = 0.5 + 0.7*pitch_PID; // Canard front
+    s5_command_scaled = 0.5 - 0.7* roll_PID; // Aileron left
+    s6_command_scaled = 0.5 - 0.7* roll_PID; // Aileron right  
+
   }
 
   //0.5 is centered servo, 0.0 is zero throttle if connecting to ESC for conventional PWM, 1.0 is max throttle
